@@ -34,10 +34,10 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref="hiltNavCompose"}
-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" } # implementation("com.squareup.moshi:moshi:1.15.1")
-moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" } # com.squareup.moshi:moshi-kotlin-codegen:1.15.1
-retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }# 'com.squareup.retrofit2:converter-moshi:latest.version'
-
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref="lifecycleRuntimeKtx" }
 
 # implementation("androidx.media3:media3-exoplayer:1.2.0")
 #implementation("androidx.media3:media3-ui:1.2.0")

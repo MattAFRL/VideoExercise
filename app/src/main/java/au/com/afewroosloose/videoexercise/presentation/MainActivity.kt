@@ -5,19 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -31,9 +26,6 @@ import au.com.afewroosloose.videoexercise.presentation.Destination.Companion.LOA
 import au.com.afewroosloose.videoexercise.presentation.theme.VideoExerciseTheme
 import au.com.afewroosloose.videoexercise.presentation.util.Event
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,15 +35,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val error: String? by mainViewModel.errors.collectAsState(initial = null)
-            val videos: List<String> by mainViewModel.videos.collectAsState(initial = emptyList())
-            val destination by mainViewModel.destination.collectAsState(initial = Event(null))
+            val error: String? by mainViewModel.errors.collectAsStateWithLifecycle(null)
+            val videos: List<String> by mainViewModel.videos.collectAsStateWithLifecycle()
+            val destination by mainViewModel.destination.collectAsStateWithLifecycle()
 
             val navController: NavHostController = rememberNavController()
-
-            destination.getValue()?.let {
-                navController.navigate(it.routeName)
-            }
 
             LaunchedEffect("FetchVideos") {
                 mainViewModel.fetchVideosForList()
@@ -82,7 +70,7 @@ class MainActivity : ComponentActivity() {
                                     0
                                 ) ?: 0,
                                 navController,
-                                mainViewModel.getCurrentVideoList() // not really ideal, but I was running low on time
+                                videos
                             )
                         }
                         composable(ERROR_NAME) {
@@ -90,6 +78,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+
+            destination.getValue()?.let {
+                navController.navigate(it.routeName)
             }
         }
     }

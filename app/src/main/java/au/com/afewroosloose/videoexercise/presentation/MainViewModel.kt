@@ -1,5 +1,6 @@
 package au.com.afewroosloose.videoexercise.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import au.com.afewroosloose.videoexercise.application.di.ConcurrencyModule.Companion.IO_DISPATCHER
@@ -8,8 +9,12 @@ import au.com.afewroosloose.videoexercise.domain.repository.VideoRepository
 import au.com.afewroosloose.videoexercise.presentation.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,9 +28,13 @@ class MainViewModel @Inject constructor(
     @Named(MAIN_DISPATCHER) private val mainDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val videos: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
-    val errors: MutableSharedFlow<String> = MutableSharedFlow()
-    val destination: MutableSharedFlow<Event<Destination>> = MutableSharedFlow()
+    private val _videos: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    val videos: StateFlow<List<String>> = _videos
+    private val _errors: MutableSharedFlow<String> = MutableSharedFlow()
+    val errors: SharedFlow<String> = _errors
+    private val _destination: MutableStateFlow<Event<Destination>> =
+        MutableStateFlow(Event(Destination.Loading))
+    val destination: StateFlow<Event<Destination>> = _destination
 
     private val hasFetchedVideos = AtomicBoolean(false)
     fun fetchVideosForList() {
@@ -34,29 +43,27 @@ class MainViewModel @Inject constructor(
                 val result = videoRepository.getVideoList(false)
                 withContext(mainDispatcher) {
                     if (!result.isSuccess) {
-                        errors.emit(result.exceptionOrNull()?.message ?: "Something went wrong")
-                        destination.emit(Event(Destination.Error))
+                        _errors.emit(result.exceptionOrNull()?.message ?: "Something went wrong")
+                        _destination.emit(Event(Destination.Error))
                     } else {
                         try {
-                            videos.emit(result.getOrThrow().manifest.values.toList())
-                            destination.emit(Event(Destination.List))
+                            _videos.emit(result.getOrThrow().manifest.values.toList())
+                            _destination.emit(Event(Destination.List))
                         } catch (ex: Exception) {
-                            errors.emit(ex.message ?: "Something went wrong")
-                            destination.emit(Event(Destination.Error))
+                            _errors.emit(ex.message ?: "Something went wrong")
+                            _destination.emit(Event(Destination.Error))
                         }
                     }
                 }
             }
         }
     }
-
-    fun getCurrentVideoList() = videos.value
-
+    
     fun onAction(action: Action) {
         when (action) {
             is Action.FullScreen -> {
                 viewModelScope.launch {
-                    destination.emit(Event(Destination.Detail(action.index)))
+                    _destination.emit(Event(Destination.Detail(action.index)))
                 }
             }
         }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
@@ -51,6 +52,14 @@ fun VideoDetailScreens(
     navController: NavController,
     videos: List<String>
 ) {
+    if (videos.isEmpty()) {
+        Text("There are no videos currently")
+        return
+    }
+    if (index !in videos.indices) {
+        Text("The index is out of bounds")
+        return
+    }
     val context = LocalContext.current
     val exoPlayers =
         remember { // we cache the ExoPlayers up here so we can have more control over their lifecycle.
@@ -146,7 +155,7 @@ private fun LargeVideoPlayer(
     AndroidView(
         factory = {
             PlayerView(it).apply {
-                this.controllerAutoShow = false
+                this.controllerAutoShow = true
                 this.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility ->
                     showAdditionalControls.value = visibility == VISIBLE
                     showPagerIndicator.value = visibility == VISIBLE
