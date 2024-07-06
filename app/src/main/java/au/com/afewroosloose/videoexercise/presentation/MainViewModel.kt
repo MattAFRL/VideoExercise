@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -25,7 +26,10 @@ class MainViewModel @Inject constructor(
     val videos: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     val errors: MutableSharedFlow<String> = MutableSharedFlow()
     val destination: MutableSharedFlow<Event<Destination>> = MutableSharedFlow()
+
+    private val hasFetchedVideos = AtomicBoolean(false)
     fun fetchVideosForList() {
+        if (!hasFetchedVideos.getAndSet(true)) { // we'll assume one attempt since the specs don't mention how to retry
             viewModelScope.launch(ioDispatcher) {
                 val result = videoRepository.getVideoList(false)
                 withContext(mainDispatcher) {
@@ -35,12 +39,14 @@ class MainViewModel @Inject constructor(
                     } else {
                         try {
                             videos.emit(result.getOrThrow().manifest.values.toList())
+                            destination.emit(Event(Destination.List))
                         } catch (ex: Exception) {
                             errors.emit(ex.message ?: "Something went wrong")
                             destination.emit(Event(Destination.Error))
                         }
                     }
                 }
+            }
         }
     }
 
