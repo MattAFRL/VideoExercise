@@ -1,17 +1,16 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.hilt)
     kotlin("kapt")
 }
 
 android {
-    namespace = "au.com.afewroosloose.swannexercise"
+    namespace = "au.com.afewroosloose.videoexercise"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "au.com.afewroosloose.swannexercise"
+        applicationId = "au.com.afewroosloose.videoexercise"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -21,6 +20,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "BASE_URL", "\"https://66anmbvqtuyabd7dpvy5vwqp2e0drbfz.lambda-url.ap-southeast-1.on.aws/\"")
     }
 
     buildTypes {
@@ -41,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -62,7 +64,15 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.exoplayer.hls)
     implementation(libs.retrofit)
+    implementation(libs.moshi)
+    implementation(libs.retrofit.moshi)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    kapt(libs.moshi.codegen)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     testImplementation(libs.junit)
@@ -72,4 +82,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+hilt {
+    enableAggregatingTask = false
 }

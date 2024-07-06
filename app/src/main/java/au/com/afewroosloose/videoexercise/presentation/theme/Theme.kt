@@ -1,4 +1,4 @@
-package au.com.afewroosloose.swannexercise.ui.theme
+package au.com.afewroosloose.videoexercise.presentation.theme
 
 import android.app.Activity
 import android.os.Build
@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun SwannExerciseTheme(
+fun VideoExerciseTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

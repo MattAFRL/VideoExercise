@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">SwannExercise</string>
+    <string name="app_name">Video Exercise</string>
+    <string name="exit">Exit</string>
 </resources>

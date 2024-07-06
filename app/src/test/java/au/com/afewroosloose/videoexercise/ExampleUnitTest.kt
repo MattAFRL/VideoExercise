@@ -1,4 +1,4 @@
-package au.com.afewroosloose.swannexercise
+package au.com.afewroosloose.videoexercise
 
 import org.junit.Test
 

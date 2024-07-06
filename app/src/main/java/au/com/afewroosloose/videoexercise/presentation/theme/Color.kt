@@ -1,4 +1,4 @@
-package au.com.afewroosloose.swannexercise.ui.theme
+package au.com.afewroosloose.videoexercise.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
